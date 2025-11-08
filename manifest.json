@@ -1,12 +1,12 @@
 {
   "name": "Qwen Chat",
   "short_name": "Qwen",
-  "description": "Access Qwen AI assistant as a native app",
-  "start_url": "/",
+  "description": "Qwen AI Chat - Standalone Progressive Web App",
+  "start_url": "/index.html",
   "display": "standalone",
-  "background_color": "#000000",
+  "background_color": "#667eea",
   "theme_color": "#667eea",
-  "orientation": "portrait-primary",
+  "orientation": "portrait",
   "scope": "/",
   "icons": [
     {

@@ -2,12 +2,13 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Qwen Chat">
-    <meta name="theme-color" content="#000000">
-    <meta name="description" content="Qwen AI Chat - Access Qwen AI assistant as a native app">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#667eea">
+    <meta name="description" content="Qwen AI Chat - Standalone PWA">
 
     <title>Qwen Chat</title>
 
@@ -29,194 +30,487 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        :root {
+            --primary-color: #667eea;
+            --primary-dark: #5568d3;
+            --secondary-color: #764ba2;
+            --bg-color: #f5f5f7;
+            --chat-bg: #ffffff;
+            --user-msg-bg: #667eea;
+            --ai-msg-bg: #e9ecef;
+            --text-color: #000000;
+            --text-secondary: #666666;
+            --border-color: #e0e0e0;
         }
 
         html, body {
             width: 100%;
             height: 100%;
             overflow: hidden;
-            background: #000;
+            background: var(--bg-color);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
         }
 
-        /* Loading screen */
-        #loading {
+        /* iOS safe area support */
+        body {
+            padding-top: env(safe-area-inset-top);
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+
+        #app {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            background: var(--bg-color);
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            flex-shrink: 0;
+        }
+
+        .header-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .logo-small {
+            width: 32px;
+            height: 32px;
+            background: white;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-color);
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .settings-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            font-size: 18px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .settings-btn:active {
+            background: rgba(255,255,255,0.3);
+        }
+
+        /* Chat Container */
+        .chat-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .message {
+            display: flex;
+            gap: 10px;
+            animation: messageSlideIn 0.3s ease-out;
+        }
+
+        @keyframes messageSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message.user {
+            flex-direction: row-reverse;
+        }
+
+        .message-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .user .message-avatar {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .assistant .message-avatar {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+        }
+
+        .message-content {
+            max-width: 75%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            word-wrap: break-word;
+            line-height: 1.4;
+        }
+
+        .user .message-content {
+            background: var(--user-msg-bg);
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        .assistant .message-content {
+            background: var(--ai-msg-bg);
+            color: var(--text-color);
+            border-bottom-left-radius: 4px;
+        }
+
+        /* Input Area */
+        .input-area {
+            padding: 15px 20px;
+            background: white;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            gap: 10px;
+            align-items: flex-end;
+            flex-shrink: 0;
+        }
+
+        .input-wrapper {
+            flex: 1;
+            background: var(--bg-color);
+            border-radius: 24px;
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            max-height: 120px;
+        }
+
+        #messageInput {
+            flex: 1;
+            border: none;
+            background: transparent;
+            font-size: 16px;
+            resize: none;
+            outline: none;
+            font-family: inherit;
+            max-height: 100px;
+            overflow-y: auto;
+        }
+
+        .send-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            border: none;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s;
+            flex-shrink: 0;
+        }
+
+        .send-btn:active {
+            transform: scale(0.9);
+        }
+
+        .send-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Settings Modal */
+        .modal {
+            display: none;
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            max-width: 500px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 22px;
+            font-weight: bold;
+            color: var(--text-color);
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 28px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 16px;
+            font-family: inherit;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .form-help {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-top: 6px;
+        }
+
+        .save-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .save-btn:active {
+            opacity: 0.9;
+        }
+
+        /* Loading indicator */
+        .typing-indicator {
+            display: none;
+            padding: 12px 16px;
+            background: var(--ai-msg-bg);
+            border-radius: 18px;
+            width: fit-content;
+            margin-left: 46px;
+        }
+
+        .typing-indicator.active {
+            display: block;
+        }
+
+        .typing-dots {
+            display: flex;
+            gap: 4px;
+        }
+
+        .typing-dots span {
+            width: 8px;
+            height: 8px;
+            background: var(--text-secondary);
+            border-radius: 50%;
+            animation: typing 1.4s infinite;
+        }
+
+        .typing-dots span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-dots span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typing {
+            0%, 60%, 100% {
+                opacity: 0.3;
+            }
+            30% {
+                opacity: 1;
+            }
+        }
+
+        /* Empty state */
+        .empty-state {
             display: flex;
             flex-direction: column;
-            justify-content: center;
             align-items: center;
-            z-index: 9999;
-            transition: opacity 0.5s ease-out;
+            justify-content: center;
+            height: 100%;
+            text-align: center;
+            padding: 40px;
         }
 
-        #loading.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        .logo {
-            width: 100px;
-            height: 100px;
-            background: white;
+        .empty-logo {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
             border-radius: 20px;
             display: flex;
-            justify-content: center;
             align-items: center;
-            font-size: 48px;
+            justify-content: center;
+            color: white;
+            font-size: 40px;
             font-weight: bold;
-            color: #667eea;
             margin-bottom: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
 
-        .loading-text {
-            color: white;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            font-size: 18px;
-            margin-top: 10px;
-        }
-
-        .spinner {
-            width: 40px;
-            height: 40px;
-            border: 4px solid rgba(255,255,255,0.3);
-            border-top-color: white;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-top: 20px;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        /* Main container */
-        #main-container {
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            display: none;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-            text-align: center;
-        }
-
-        #main-container.visible {
-            display: flex;
-        }
-
-        .main-logo {
-            width: 120px;
-            height: 120px;
-            background: white;
-            border-radius: 25px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 60px;
+        .empty-title {
+            font-size: 24px;
             font-weight: bold;
-            color: #667eea;
-            margin-bottom: 30px;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.4);
-        }
-
-        .app-title {
-            color: white;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            font-size: 32px;
-            font-weight: bold;
+            color: var(--text-color);
             margin-bottom: 10px;
         }
 
-        .app-subtitle {
-            color: rgba(255,255,255,0.9);
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        .empty-text {
+            color: var(--text-secondary);
             font-size: 16px;
-            margin-bottom: 40px;
-            max-width: 300px;
-        }
-
-        .launch-button {
-            background: white;
-            color: #667eea;
-            border: none;
-            padding: 18px 50px;
-            font-size: 18px;
-            font-weight: bold;
-            border-radius: 50px;
-            cursor: pointer;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            transition: transform 0.2s, box-shadow 0.2s;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        .launch-button:active {
-            transform: scale(0.95);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-        }
-
-        .info-text {
-            color: rgba(255,255,255,0.7);
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            font-size: 12px;
-            margin-top: 30px;
-            max-width: 280px;
-            line-height: 1.5;
         }
     </style>
 </head>
 <body>
-    <!-- Loading screen -->
-    <div id="loading">
-        <div class="logo">Q</div>
-        <div class="loading-text">Qwen Chat</div>
-        <div class="spinner"></div>
+    <div id="app">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-title">
+                <div class="logo-small">Q</div>
+                <span>Qwen Chat</span>
+            </div>
+            <button class="settings-btn" onclick="openSettings()">⚙️</button>
+        </div>
+
+        <!-- Chat Container -->
+        <div class="chat-container" id="chatContainer">
+            <div class="empty-state" id="emptyState">
+                <div class="empty-logo">Q</div>
+                <div class="empty-title">Welcome to Qwen Chat</div>
+                <div class="empty-text">Start a conversation with Qwen AI</div>
+            </div>
+        </div>
+
+        <!-- Typing Indicator -->
+        <div class="typing-indicator" id="typingIndicator">
+            <div class="typing-dots">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+
+        <!-- Input Area -->
+        <div class="input-area">
+            <div class="input-wrapper">
+                <textarea
+                    id="messageInput"
+                    placeholder="Type a message..."
+                    rows="1"
+                    onkeydown="handleKeyDown(event)"
+                ></textarea>
+            </div>
+            <button class="send-btn" id="sendBtn" onclick="sendMessage()">
+                ➤
+            </button>
+        </div>
     </div>
 
-    <!-- Main app screen -->
-    <div id="main-container">
-        <div class="main-logo">Q</div>
-        <div class="app-title">Qwen Chat</div>
-        <div class="app-subtitle">Your AI-powered conversation assistant</div>
-        <button class="launch-button" onclick="launchChat()">Launch Chat</button>
-        <div class="info-text">This will open chat.qwen.ai in your browser</div>
+    <!-- Settings Modal -->
+    <div class="modal" id="settingsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Settings</div>
+                <button class="close-btn" onclick="closeSettings()">×</button>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">API Key</label>
+                <input
+                    type="password"
+                    class="form-input"
+                    id="apiKeyInput"
+                    placeholder="Enter your Qwen API key"
+                >
+                <div class="form-help">
+                    Get your API key from <a href="https://dashscope.console.aliyun.com/apiKey" target="_blank">Alibaba Cloud</a>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Model</label>
+                <select class="form-input" id="modelSelect">
+                    <option value="qwen-max">Qwen Max (Most Capable)</option>
+                    <option value="qwen-plus">Qwen Plus (Balanced)</option>
+                    <option value="qwen-turbo">Qwen Turbo (Fast)</option>
+                </select>
+            </div>
+
+            <button class="save-btn" onclick="saveSettings()">Save Settings</button>
+        </div>
     </div>
 
-    <script>
-        // Register service worker
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/sw.js')
-                .then(registration => {
-                    console.log('ServiceWorker registered:', registration);
-                })
-                .catch(err => {
-                    console.log('ServiceWorker registration failed:', err);
-                });
-        }
-
-        // Hide loading and show main screen after brief delay
-        setTimeout(() => {
-            document.getElementById('loading').classList.add('hidden');
-            document.getElementById('main-container').classList.add('visible');
-        }, 1000);
-
-        // Function to launch Qwen Chat
-        function launchChat() {
-            window.location.href = 'https://chat.qwen.ai';
-        }
-
-        // Optional: Auto-redirect after some time (commented out for better UX)
-        // setTimeout(() => {
-        //     launchChat();
-        // }, 3000);
-    </script>
+    <script src="/app.js"></script>
 </body>
 </html>

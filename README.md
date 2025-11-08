@@ -1,181 +1,234 @@
-# Qwen Chat - Progressive Web App Launcher
+# Qwen Chat - Standalone Progressive Web App
 
-A Progressive Web App (PWA) launcher for Qwen AI Chat that provides quick access with a branded app icon on your iPhone.
+A fully-featured, standalone Progressive Web App (PWA) for Qwen AI Chat that runs natively on your iPhone without opening Safari. True full-screen experience with a custom chat interface powered by the Qwen API.
 
 ## Features
 
-- Custom app icon on your home screen
-- Quick launcher with branded loading screen
-- No app store required
-- Works as a shortcut to chat.qwen.ai
-- iOS-optimized
+- **Full Standalone Mode**: Runs as an independent app, not in Safari
+- **True Full-Screen**: No browser UI, just your chat interface
+- **Custom Chat Interface**: Beautiful, iOS-optimized design
+- **Offline-Ready**: PWA with service worker for fast loading
+- **Message History**: Conversations saved locally
+- **Custom Branding**: Gradient app icon with "Q" logo
+- **Multiple Models**: Choose between Qwen Max, Plus, or Turbo
+- **No App Store**: Install directly from Safari
 
-## Important Note
+## How It Works
 
-Due to security restrictions (X-Frame-Options), the Qwen Chat website cannot be embedded in an iframe. This app serves as a launcher that:
-1. Shows a branded loading screen
-2. Redirects you to chat.qwen.ai
+Unlike simple redirects, this is a complete web application that:
+1. Runs entirely standalone on your iPhone
+2. Uses the official Qwen API (OpenAI-compatible)
+3. Stores your conversations locally
+4. Works in full-screen mode without Safari UI
 
-For a true full-screen experience, you can also add chat.qwen.ai directly to your home screen from Safari.
+## Installation on iPhone
 
-## Installation Options
+### Step 1: Deploy the App
 
-### Option A: Use This PWA Launcher (Recommended for Custom Icon)
+First, host these files on a web server with HTTPS:
 
-#### Step 1: Open in Safari
-1. Open Safari on your iPhone (this won't work in Chrome or other browsers)
-2. Navigate to your deployed app URL
-
-#### Step 2: Add to Home Screen
-1. Tap the **Share** button (square with arrow pointing up) at the bottom of Safari
-2. Scroll down and tap **"Add to Home Screen"**
-3. You'll see the custom Qwen Chat icon with gradient "Q" logo
-4. Tap **"Add"** in the top right corner
-
-#### Step 3: Launch the App
-1. Find the Qwen Chat icon on your home screen
-2. Tap it to see the branded loading screen
-3. You'll be redirected to chat.qwen.ai in Safari
-
-### Option B: Add chat.qwen.ai Directly (For Full Standalone Mode)
-
-If chat.qwen.ai supports PWA features:
-
-1. Open Safari and go to https://chat.qwen.ai
-2. Tap the Share button
-3. Tap "Add to Home Screen"
-4. This will use Qwen's own icon and may provide better full-screen integration
-
-**Note:** Option A gives you a prettier custom icon, while Option B (if supported) provides better standalone functionality.
-
-## Deployment
-
-### Option 1: GitHub Pages
-
+**GitHub Pages (Recommended):**
 1. Push this repository to GitHub
-2. Go to Settings > Pages
-3. Select the branch to deploy (usually `main` or `master`)
-4. Your app will be available at `https://yourusername.github.io/qwen-webapp/`
+2. Go to Settings → Pages
+3. Deploy from your branch
+4. Get your URL: `https://yourusername.github.io/qwen-webapp/`
 
-### Option 2: Netlify
-
-1. Sign up at [netlify.com](https://netlify.com)
-2. Drag and drop this folder to deploy
-3. Your app will be live instantly with a custom URL
-
-### Option 3: Vercel
-
-1. Sign up at [vercel.com](https://vercel.com)
-2. Import this repository
-3. Deploy with one click
-
-### Option 4: Any Static Host
-
-This is a static web app - just upload all files to any web hosting service:
-- AWS S3 + CloudFront
-- Firebase Hosting
+**Other Options:**
+- Netlify: Drag & drop deployment
+- Vercel: GitHub integration
 - Cloudflare Pages
-- Any web server with HTTPS support
 
-**Important:** HTTPS is required for PWA features to work on iOS.
+### Step 2: Get Your Qwen API Key
 
-## Project Structure
+1. Go to [Alibaba Cloud DashScope](https://dashscope.console.aliyun.com/apiKey)
+2. Sign up/login to Alibaba Cloud
+3. Create an API key
+4. Copy the key (you'll need it in the app)
 
-```
-qwen-webapp/
-├── index.html          # Main HTML file with PWA setup
-├── manifest.json       # PWA manifest for installation
-├── sw.js              # Service worker for offline support
-├── icons/             # App icons for various sizes
-│   ├── icon-16.png
-│   ├── icon-32.png
-│   ├── icon-120.png
-│   ├── icon-180.png
-│   └── ...
-├── generate_icons.py   # Script to generate SVG icons
-├── create_png_icons.py # Script to generate PNG icons
-└── README.md          # This file
-```
+**Pricing**: Qwen has a generous free tier and very competitive pricing (~$0.0016 per 1K input tokens).
+
+### Step 3: Install on iPhone
+
+1. Open Safari and navigate to your deployed app URL
+2. Tap the **Share** button (square with up arrow)
+3. Scroll down and tap **"Add to Home Screen"**
+4. Tap **"Add"** to confirm
+
+### Step 4: Configure the App
+
+1. Tap the Qwen Chat icon on your home screen
+2. The app will open in **full-screen mode** (no Safari UI!)
+3. Tap the ⚙️ settings button
+4. Paste your API key
+5. Choose your preferred model (Qwen Max recommended)
+6. Tap "Save Settings"
+
+### Step 5: Start Chatting!
+
+Type your message and start chatting with Qwen AI. Your conversations are saved locally on your device.
+
+## Features Guide
+
+### Chat Interface
+- **Message Input**: Type or use voice-to-text (iOS feature)
+- **Send Button**: Tap to send, or press Enter on keyboard
+- **Message History**: Automatically saved and restored
+- **Typing Indicator**: Shows when Qwen is thinking
+
+### Settings
+- **API Key**: Your Alibaba Cloud API key (stored locally)
+- **Model Selection**:
+  - Qwen Max: Most capable, best for complex tasks
+  - Qwen Plus: Balanced performance and speed
+  - Qwen Turbo: Fastest responses
+
+### Models Comparison
+
+| Model | Speed | Capability | Best For |
+|-------|-------|------------|----------|
+| Qwen Max | Slower | Highest | Complex reasoning, coding |
+| Qwen Plus | Medium | High | General conversation |
+| Qwen Turbo | Fastest | Good | Quick questions |
 
 ## Technical Details
 
-### PWA Features
-- **Manifest**: Defines app name, icons, and display mode
-- **Service Worker**: Enables offline functionality and caching
-- **iOS Meta Tags**: Optimizes for iOS installation and full-screen mode
+### Architecture
+- **Frontend**: Pure HTML/CSS/JavaScript (no frameworks needed)
+- **API**: Alibaba Cloud Qwen API (OpenAI-compatible)
+- **Storage**: LocalStorage for messages and settings
+- **PWA**: Service worker for offline shell and caching
+
+### Files Structure
+```
+qwen-webapp/
+├── index.html          # Main app interface
+├── app.js             # Application logic & API calls
+├── manifest.json      # PWA configuration
+├── sw.js             # Service worker
+├── icons/            # App icons (all sizes)
+└── README.md         # This file
+```
+
+### Privacy & Security
+- **API Key**: Stored locally in your browser (never sent to our servers)
+- **Messages**: Saved only on your device
+- **HTTPS Required**: All API calls are encrypted
+- **No Tracking**: This app doesn't collect any analytics
 
 ### Browser Support
-- iOS Safari 11.3+
-- Android Chrome 76+
-- Desktop browsers (limited PWA features)
-
-### Privacy
-This app is a wrapper around chat.qwen.ai. All data and privacy policies are governed by Qwen AI.
-
-## Customization
-
-### Change App Name
-Edit `manifest.json`:
-```json
-"name": "Your App Name",
-"short_name": "Short Name"
-```
-
-### Change Colors
-Edit `manifest.json`:
-```json
-"theme_color": "#your-color",
-"background_color": "#your-color"
-```
-
-Edit `index.html` for gradient colors in the loading screen.
-
-### Change Icons
-Run the icon generation scripts:
-```bash
-python3 create_png_icons.py
-```
-
-Or replace the icons in the `icons/` directory with your own.
+- **iOS Safari 11.3+**: Full PWA support
+- **Android Chrome 76+**: Full support
+- **Desktop Browsers**: Works but limited PWA features
 
 ## Troubleshooting
 
 ### App doesn't install
-- Make sure you're using Safari (not Chrome)
-- Verify the site is served over HTTPS
-- Check that manifest.json is valid
+- Use Safari (not Chrome or other browsers)
+- Verify site is served over HTTPS
+- Check manifest.json is valid
 
-### Full-screen mode not working
-- Verify the meta tags in index.html
+### API Key error
+- Verify key is from Alibaba Cloud DashScope
+- Check you've activated the API service
+- Ensure you have available credits
+
+### Messages not sending
+- Check internet connection
+- Verify API key is correct in settings
+- Try switching to a different model
+
+### Not running in full-screen
 - Make sure you installed via "Add to Home Screen"
-- Check iOS version (needs 11.3+)
+- Reboot iPhone if needed
+- Reinstall the PWA
 
-### Icons not showing
-- Clear Safari cache
-- Regenerate icons with correct sizes
-- Verify icon paths in manifest.json
+### Clearing Data
+Open the app and run these commands in console:
+```javascript
+// Clear all messages
+window.clearChat()
+
+// Export messages
+window.exportMessages()
+
+// Clear everything
+localStorage.clear()
+```
 
 ## Development
 
 To modify and test locally:
 
-1. Clone the repository
-2. Make your changes
-3. Serve locally with HTTPS (required for PWA):
-   ```bash
-   # Using Python
-   python3 -m http.server 8000
+```bash
+# Clone the repository
+git clone <your-repo-url>
+cd qwen-webapp
 
-   # Or use any local server
-   npx serve
-   ```
-4. Test on your device (may need ngrok or similar for HTTPS)
+# Serve with any static server (needs HTTPS for PWA features)
+python3 -m http.server 8000
 
-## License
+# Or use
+npx serve
+```
 
-This is a wrapper app for educational purposes. Qwen AI and its services are subject to their own terms of service.
+For HTTPS testing on iPhone:
+```bash
+# Use ngrok for HTTPS tunnel
+ngrok http 8000
+```
+
+## API Documentation
+
+The app uses Qwen's OpenAI-compatible API:
+- **Endpoint**: `https://dashscope-intl.aliyuncs.com/compatible-mode/v1`
+- **Format**: Same as OpenAI Chat Completions API
+- **Documentation**: [Alibaba Cloud Model Studio](https://www.alibabacloud.com/help/en/model-studio/use-qwen-by-calling-api)
+
+## Customization
+
+### Change Colors
+Edit CSS variables in `index.html`:
+```css
+:root {
+    --primary-color: #667eea;  /* Your primary color */
+    --secondary-color: #764ba2; /* Your secondary color */
+}
+```
+
+### Change App Name
+Edit `manifest.json`:
+```json
+{
+  "name": "Your App Name",
+  "short_name": "Short"
+}
+```
+
+### Add More Models
+Edit the model selector in `index.html` and update `app.js` accordingly.
 
 ## Credits
 
-- Qwen AI: https://chat.qwen.ai
-- PWA implementation: Custom wrapper for iOS optimization
+- **Qwen AI**: Powered by Alibaba Cloud Qwen models
+- **API**: Alibaba Cloud DashScope
+- **Icons**: Custom gradient design
+
+## License
+
+This is an open-source wrapper app. Qwen AI and its services are subject to Alibaba Cloud's terms of service.
+
+## Support
+
+For issues or questions:
+1. Check the Troubleshooting section above
+2. Verify your API key and credits
+3. Check Alibaba Cloud DashScope status
+4. Review browser console for errors
+
+## Updates
+
+This PWA auto-updates when you deploy new versions. Users will get updates the next time they open the app.
+
+---
+
+**Enjoy chatting with Qwen AI in true full-screen native mode on your iPhone!** 🚀
