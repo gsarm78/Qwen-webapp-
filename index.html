@@ -2,12 +2,12 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Qwen Chat">
     <meta name="mobile-web-app-capable" content="yes">
-    <meta name="theme-color" content="#667eea">
+    <meta name="theme-color" content="#000000">
 
     <title>Qwen Chat</title>
 
@@ -34,19 +34,48 @@
             width: 100%;
             height: 100%;
             overflow: hidden;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #000000;
         }
 
-        .container {
+        /* iOS safe area support */
+        body {
+            padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+        }
+
+        #app-container {
+            width: 100%;
+            height: 100%;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            justify-content: center;
+        }
+
+        #chat-frame {
+            flex: 1;
+            width: 100%;
             height: 100%;
-            color: white;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            text-align: center;
-            padding: 20px;
+            border: none;
+            background: #ffffff;
+        }
+
+        /* Loading screen */
+        #loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease-out;
+        }
+
+        #loading.hidden {
+            opacity: 0;
+            pointer-events: none;
         }
 
         .logo {
@@ -55,24 +84,20 @@
             background: white;
             border-radius: 20px;
             display: flex;
-            align-items: center;
             justify-content: center;
-            font-size: 60px;
+            align-items: center;
+            font-size: 48px;
             font-weight: bold;
             color: #667eea;
             margin-bottom: 20px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
 
-        .title {
-            font-size: 28px;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-
-        .subtitle {
-            font-size: 16px;
-            opacity: 0.9;
+        .loading-text {
+            color: white;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            font-size: 18px;
+            margin-top: 10px;
         }
 
         .spinner {
@@ -82,32 +107,142 @@
             border-top-color: white;
             border-radius: 50%;
             animation: spin 1s linear infinite;
-            margin-top: 30px;
+            margin-top: 20px;
         }
 
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
-    </style>
 
-    <script>
-        // Immediate redirect to chat.qwen.ai
-        window.location.replace('https://chat.qwen.ai');
-    </script>
+        /* Error message */
+        #error-message {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            max-width: 90%;
+            text-align: center;
+            z-index: 10000;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+
+        #error-message.show {
+            display: block;
+        }
+
+        .error-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .error-text {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+
+        .error-button {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
+    <div id="loading">
         <div class="logo">Q</div>
-        <div class="title">Qwen Chat</div>
-        <div class="subtitle">Redirecting to chat.qwen.ai...</div>
+        <div class="loading-text">Loading Qwen Chat...</div>
         <div class="spinner"></div>
     </div>
 
+    <div id="error-message">
+        <div class="error-title">Unable to Load</div>
+        <div class="error-text">
+            The Qwen Chat interface couldn't be embedded. This usually happens due to security restrictions.
+            <br><br>
+            Would you like to open it in your browser instead?
+        </div>
+        <button class="error-button" onclick="window.location.href='https://chat.qwen.ai'">
+            Open Qwen Chat
+        </button>
+    </div>
+
+    <div id="app-container">
+        <iframe
+            id="chat-frame"
+            src="https://chat.qwen.ai"
+            allow="camera; microphone; clipboard-read; clipboard-write"
+            allowfullscreen
+        ></iframe>
+    </div>
+
     <script>
-        // Register service worker for PWA
+        // Register service worker
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/sw.js').catch(() => {});
+            navigator.serviceWorker.register('/sw.js')
+                .then(registration => console.log('ServiceWorker registered'))
+                .catch(err => console.log('ServiceWorker registration failed:', err));
         }
+
+        const iframe = document.getElementById('chat-frame');
+        const loading = document.getElementById('loading');
+        const errorMessage = document.getElementById('error-message');
+        let loadTimeout;
+        let hasLoaded = false;
+
+        // Hide loading when iframe loads
+        iframe.addEventListener('load', () => {
+            hasLoaded = true;
+            clearTimeout(loadTimeout);
+            setTimeout(() => {
+                loading.classList.add('hidden');
+            }, 500);
+        });
+
+        // Error handling if iframe fails to load
+        iframe.addEventListener('error', () => {
+            clearTimeout(loadTimeout);
+            loading.classList.add('hidden');
+            errorMessage.classList.add('show');
+        });
+
+        // Timeout fallback - if iframe doesn't load in 10 seconds, show error
+        loadTimeout = setTimeout(() => {
+            if (!hasLoaded) {
+                loading.classList.add('hidden');
+                errorMessage.classList.add('show');
+            }
+        }, 10000);
+
+        // Try to detect if iframe is blocked (won't always work due to same-origin policy)
+        setTimeout(() => {
+            try {
+                const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                if (!iframeDoc) {
+                    throw new Error('Cannot access iframe');
+                }
+            } catch (e) {
+                // Iframe might be blocked, but this isn't always reliable
+                console.log('Iframe access restricted (this may be normal)');
+            }
+        }, 3000);
+
+        // Prevent scrolling on body (all scrolling should be in iframe)
+        document.body.style.overflow = 'hidden';
+        document.documentElement.style.overflow = 'hidden';
     </script>
 </body>
 </html>
