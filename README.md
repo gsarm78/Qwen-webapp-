@@ -1,32 +1,52 @@
-# Qwen Chat - Progressive Web App
+# Qwen Chat - Progressive Web App Launcher
 
-A Progressive Web App (PWA) wrapper for Qwen AI Chat that allows you to install and use it as a native app on your iPhone with full-screen support.
+A Progressive Web App (PWA) launcher for Qwen AI Chat that provides quick access with a branded app icon on your iPhone.
 
 ## Features
 
-- Full-screen experience on iOS devices
-- Install to home screen like a native app
-- Works offline (basic shell)
+- Custom app icon on your home screen
+- Quick launcher with branded loading screen
 - No app store required
-- Automatic updates
-- iOS-optimized interface
+- Works as a shortcut to chat.qwen.ai
+- iOS-optimized
 
-## Installation on iPhone
+## Important Note
 
-### Step 1: Open in Safari
+Due to security restrictions (X-Frame-Options), the Qwen Chat website cannot be embedded in an iframe. This app serves as a launcher that:
+1. Shows a branded loading screen
+2. Redirects you to chat.qwen.ai
+
+For a true full-screen experience, you can also add chat.qwen.ai directly to your home screen from Safari.
+
+## Installation Options
+
+### Option A: Use This PWA Launcher (Recommended for Custom Icon)
+
+#### Step 1: Open in Safari
 1. Open Safari on your iPhone (this won't work in Chrome or other browsers)
 2. Navigate to your deployed app URL
 
-### Step 2: Add to Home Screen
+#### Step 2: Add to Home Screen
 1. Tap the **Share** button (square with arrow pointing up) at the bottom of Safari
 2. Scroll down and tap **"Add to Home Screen"**
-3. You'll see the Qwen Chat icon and name
+3. You'll see the custom Qwen Chat icon with gradient "Q" logo
 4. Tap **"Add"** in the top right corner
 
-### Step 3: Launch the App
+#### Step 3: Launch the App
 1. Find the Qwen Chat icon on your home screen
-2. Tap it to launch in full-screen mode
-3. The app will run without Safari's browser UI
+2. Tap it to see the branded loading screen
+3. You'll be redirected to chat.qwen.ai in Safari
+
+### Option B: Add chat.qwen.ai Directly (For Full Standalone Mode)
+
+If chat.qwen.ai supports PWA features:
+
+1. Open Safari and go to https://chat.qwen.ai
+2. Tap the Share button
+3. Tap "Add to Home Screen"
+4. This will use Qwen's own icon and may provide better full-screen integration
+
+**Note:** Option A gives you a prettier custom icon, while Option B (if supported) provides better standalone functionality.
 
 ## Deployment
 

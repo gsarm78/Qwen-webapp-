@@ -38,20 +38,6 @@
             background: #000;
         }
 
-        #app-container {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-        }
-
-        #chat-frame {
-            flex: 1;
-            width: 100%;
-            border: none;
-            background: #fff;
-        }
-
         /* Loading screen */
         #loading {
             position: fixed;
@@ -109,66 +95,128 @@
             to { transform: rotate(360deg); }
         }
 
-        /* iOS safe area support */
-        @supports (padding: env(safe-area-inset-top)) {
-            #app-container {
-                padding-top: env(safe-area-inset-top);
-                padding-bottom: env(safe-area-inset-bottom);
-            }
+        /* Main container */
+        #main-container {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            text-align: center;
+        }
+
+        #main-container.visible {
+            display: flex;
+        }
+
+        .main-logo {
+            width: 120px;
+            height: 120px;
+            background: white;
+            border-radius: 25px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 60px;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 30px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+        }
+
+        .app-title {
+            color: white;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .app-subtitle {
+            color: rgba(255,255,255,0.9);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            font-size: 16px;
+            margin-bottom: 40px;
+            max-width: 300px;
+        }
+
+        .launch-button {
+            background: white;
+            color: #667eea;
+            border: none;
+            padding: 18px 50px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            transition: transform 0.2s, box-shadow 0.2s;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .launch-button:active {
+            transform: scale(0.95);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .info-text {
+            color: rgba(255,255,255,0.7);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            font-size: 12px;
+            margin-top: 30px;
+            max-width: 280px;
+            line-height: 1.5;
         }
     </style>
 </head>
 <body>
+    <!-- Loading screen -->
     <div id="loading">
         <div class="logo">Q</div>
         <div class="loading-text">Qwen Chat</div>
         <div class="spinner"></div>
     </div>
 
-    <div id="app-container">
-        <iframe id="chat-frame" src="https://chat.qwen.ai" allow="microphone; camera; clipboard-write" sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-modals"></iframe>
+    <!-- Main app screen -->
+    <div id="main-container">
+        <div class="main-logo">Q</div>
+        <div class="app-title">Qwen Chat</div>
+        <div class="app-subtitle">Your AI-powered conversation assistant</div>
+        <button class="launch-button" onclick="launchChat()">Launch Chat</button>
+        <div class="info-text">This will open chat.qwen.ai in your browser</div>
     </div>
 
     <script>
         // Register service worker
         if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js')
-                    .then(registration => {
-                        console.log('ServiceWorker registered:', registration);
-                    })
-                    .catch(err => {
-                        console.log('ServiceWorker registration failed:', err);
-                    });
-            });
+            navigator.serviceWorker.register('/sw.js')
+                .then(registration => {
+                    console.log('ServiceWorker registered:', registration);
+                })
+                .catch(err => {
+                    console.log('ServiceWorker registration failed:', err);
+                });
         }
 
-        // Hide loading screen when iframe loads
-        const iframe = document.getElementById('chat-frame');
-        const loading = document.getElementById('loading');
-
-        iframe.addEventListener('load', () => {
-            setTimeout(() => {
-                loading.classList.add('hidden');
-            }, 500);
-        });
-
-        // Fallback: hide loading after 5 seconds if iframe doesn't load
+        // Hide loading and show main screen after brief delay
         setTimeout(() => {
-            loading.classList.add('hidden');
-        }, 5000);
+            document.getElementById('loading').classList.add('hidden');
+            document.getElementById('main-container').classList.add('visible');
+        }, 1000);
 
-        // Handle iOS standalone mode
-        if (window.navigator.standalone) {
-            console.log('Running in standalone mode');
+        // Function to launch Qwen Chat
+        function launchChat() {
+            window.location.href = 'https://chat.qwen.ai';
         }
 
-        // Prevent default touch behavior for better app-like experience
-        document.addEventListener('touchmove', function(e) {
-            if (e.target === document.body) {
-                e.preventDefault();
-            }
-        }, { passive: false });
+        // Optional: Auto-redirect after some time (commented out for better UX)
+        // setTimeout(() => {
+        //     launchChat();
+        // }, 3000);
     </script>
 </body>
 </html>
